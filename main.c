@@ -32,16 +32,17 @@ void bastir(node* r) {
     }
 }
 
-void sona_ekle(node* r,char *kelime) {
+void sona_ekle(node* r,char *kelime,int a) {
     while(r->next!=NULL){
         r = r->next;
     }
     r->next = (node*)malloc(sizeof (struct node));
     r->next->word = malloc(strlen(kelime)+1);
-    //r->next->word = kelime;
     strcpy(r->next->word,kelime);
+    r->next->x = a;
     //printf("%s ",r->next->word);
     r->next->next = NULL;
+
 }
 
 
@@ -73,8 +74,15 @@ int main() {
     else {
         while (!feof(dosya)) {
             fscanf(dosya,"%s",&kelime);
+            /*for (arama algoritması kelimenin aynısından var mı node ların içine bakıyore)
+                node ların içinde yoksa bütün metni arayan arama algoritması çalışanzi
+                kaç tane olduğunu bulsun sallıyorum int sayisi = 4;
+                aga şuan farkettim bi de en fazla tekrar eden kelimenin kaç kez tekrar ettiğini de tutmamız lazım
+                şöyle diyelim int en_fazla=6; ->> if(sayisi>=en_fazla) basa_ekle();
+                sonra da if(sayisi==1) sona_ekle
 
-            sona_ekle(root,&kelime);
+             */
+            sona_ekle(root,&kelime,6);
         }
     }
     bastir(root);
