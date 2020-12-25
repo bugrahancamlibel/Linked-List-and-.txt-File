@@ -32,7 +32,7 @@ void bastir(node* r) {
     }
 }
 
-void sona_ekle(node* r,char *kelime,int a) {
+node* sona_ekle(node* r,char *kelime,int a) {
     while(r->next!=NULL){
         r = r->next;
     }
@@ -42,7 +42,19 @@ void sona_ekle(node* r,char *kelime,int a) {
     r->next->x = a;
     //printf("%s ",r->next->word);
     r->next->next = NULL;
+    return r;
 
+}
+int aynisindan_varMi(node* root,node* iter,node* baslangic){
+    while (iter->next!= NULL) {
+        if(!strcmp(iter->word,root->next->word)){
+            iter = baslangic;
+            return 1;
+        }
+        iter = iter->next;
+    }
+    iter = baslangic;
+    return 0;
 }
 
 
@@ -52,8 +64,8 @@ int main() {
     dosya = fopen("C:\\Users\\BUGRA\\CLionProjects\\pro_lab_3\\metin.txt","r");
 //    printf("%c",fgetc(dosya));
 
-
     node* root;
+
     int i = 0;
     char kelime[100];
     root = (node*)malloc(sizeof(node));
@@ -63,10 +75,13 @@ int main() {
     root->next = (node*)malloc(sizeof(node));
     root ->next = NULL;
     node* iter = root;
+    node* baslangic = root;
+
     /*for (int j = 0; j <4; j++) {
         sona_ekle(root,j);
     }*/
     //bastir(root);
+
 
     if(dosya==NULL){
         printf("Dosya bulunamadi...");
@@ -82,9 +97,27 @@ int main() {
                 sonra da if(sayisi==1) sona_ekle
 
              */
-            sona_ekle(root,&kelime,6);
+
+            root = sona_ekle(root,&kelime,1);
+            if(aynisindan_varMi(root,iter,baslangic)) {
+                printf("VAR ");
+            }
+            else {
+                printf("YOK ");
+            }
         }
     }
-    bastir(root);
+    //bastir(root);
+    /*while (iter->next!= NULL) {
+        if(!strcmp(iter->word,root->next->word))
+            root->next->x++;
+        iter = iter->next;
+    }*/
+
+    /*if(!strcmp(iter->word,root->next->word))
+        root->next->x++;*/
+
+    //printf("***iterword: %s\nrootnextword: %s***",iter->word,root->next->word);
+    printf("rootnextX: %d",root->next->x);
     return 0;
 }
