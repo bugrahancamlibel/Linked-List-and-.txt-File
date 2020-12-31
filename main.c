@@ -8,22 +8,6 @@ struct node {
     struct node* next;
 };
 
-/*void bastir(node* r) {
-    while (r!= NULL) {
-        printf("%d \n", r->x);
-        r = r->next;
-    }
-}*/
-
-
-/*void sona_ekle(node* r,int a) {
-    while(r->next!=NULL){
-        r = r->next;
-    }
-    r->next = (node*)malloc(sizeof (struct node));
-    r->next->x = a;
-    r->next->next = NULL;
-}*/
 
 void bastir(node* r) {
     while (r!= NULL) {
@@ -32,7 +16,7 @@ void bastir(node* r) {
     }
 }
 
-node* sona_ekle(node* r,char *kelime,int a) {
+void sona_ekle(node* r,char *kelime,int a) {
     while(r->next!=NULL){
         r = r->next;
     }
@@ -42,82 +26,130 @@ node* sona_ekle(node* r,char *kelime,int a) {
     r->next->x = a;
     //printf("%s ",r->next->word);
     r->next->next = NULL;
-    return r;
 
 }
-int aynisindan_varMi(node* root,node* iter,node* baslangic){
-    while (iter->next!= NULL) {
-        if(!strcmp(iter->word,root->next->word)){
-            iter = baslangic;
+
+int nodeda_varmi(node* root){
+    node* iter = root;
+    while(root->next!=NULL){
+        root = root->next;
+    }//suan root son kelimede
+
+    while(iter!=root){
+        if(!strcmp(iter->word,root->word)){
+            //printf("aynisindan var.");
             return 1;
         }
+        else{
+            //bu esit degilse.
+            iter = iter->next;
+        }
+    }
+    return 0;
+}
+
+void sonu_sil(node *r){
+    node *temp;
+    node *iter = r;
+    while (iter->next->next!=NULL){
         iter = iter->next;
     }
-    iter = baslangic;
-    return 0;
+    iter->next = iter->next->next;
+
+    free(iter->next);
 }
 
 
 int main() {
 
-    FILE *dosya;
+    FILE *dosya;//çatonun aramsının içinde yapacuk
     dosya = fopen("C:\\Users\\BUGRA\\CLionProjects\\pro_lab_3\\metin.txt","r");
-//    printf("%c",fgetc(dosya));
 
     node* root;
-
-    int i = 0;
+    int kelime_buyukluk = 0;
+    int i;
     char kelime[100];
+    char kelime_2[100];
+    int kontrol;
+    int sayac = 1;
+
     root = (node*)malloc(sizeof(node));
     root->x = 10;
     root->word = malloc(strlen(" ")+1);
     strcpy(root->word," ");
     root->next = (node*)malloc(sizeof(node));
     root ->next = NULL;
-    node* iter = root;
     node* baslangic = root;
 
-    /*for (int j = 0; j <4; j++) {
-        sona_ekle(root,j);
-    }*/
-    //bastir(root);
+    /*fscanf(dosya,"%s",&kelime);
+    sona_ekle(root,&kelime,1);*/
 
 
     if(dosya==NULL){
         printf("Dosya bulunamadi...");
     }
     else {
+        int k = 0;
+        int boyutu=0;
+        int kelime_harf=0;
+
+        int a = 0;
+        fpos_t pos;
+
         while (!feof(dosya)) {
-            fscanf(dosya,"%s",&kelime);
-            /*for (arama algoritması kelimenin aynısından var mı node ların içine bakıyore)
-                node ların içinde yoksa bütün metni arayan arama algoritması çalışanzi
-                kaç tane olduğunu bulsun sallıyorum int sayisi = 4;
-                aga şuan farkettim bi de en fazla tekrar eden kelimenin kaç kez tekrar ettiğini de tutmamız lazım
-                şöyle diyelim int en_fazla=6; ->> if(sayisi>=en_fazla) basa_ekle();
-                sonra da if(sayisi==1) sona_ekle
+            int b=a;
+            fscanf(dosya, "%s", &kelime);
 
-             */
+            while(!feof(dosya)){
+                fscanf(dosya,"%s",&kelime_2);
 
-            root = sona_ekle(root,&kelime,1);
-            if(aynisindan_varMi(root,iter,baslangic)) {
-                printf("VAR ");
+                printf("%s kelimesi %s kelimesiyle karsilastirliyor...\n",kelime,kelime_2);
+
+                kontrol = strcmp(kelime,kelime_2);
+
+                if(kontrol == 0) {
+
+                    printf("%s kelimesi %s kelimesine esittir.\n",kelime,kelime_2);
+                    sayac++;
+
+                }
+
+                printf("%s : %d\n",kelime,sayac);
+
+                boyutu = ftell(dosya);
+
+            }
+
+            kelime_harf += strlen(kelime-1);
+
+            fseek(dosya,kelime_harf,SEEK_SET);
+
+            if(kelime_harf==boyutu+1){
+                break;
+            }
+
+
+            sona_ekle(root, &kelime, sayac);//bunun öncesinde kaç kelime olduğunu bulup 'a' yerine onu göndericez (aynısından olsa bile sonradan silinecek).
+            sayac = 1;
+
+            int kosul = nodeda_varmi(root); //şimdi silmeyi öğrenmeliyim
+            if(kosul==1){
+                printf("VAR ");//silme burda.
+                sonu_sil(root);/*aslında başta aynı node dan varsa hiç bi şey yapmadan devam ettirdim ama
+                nodeda_varmi fonksiyonu sürekli ayni şeyi kontrol eder bu yüzden oluşturup siliyorum ki bir sonraki
+                kelimenin de kontrolünü yapabileyim*/
             }
             else {
                 printf("YOK ");
             }
         }
+
+        bastir(baslangic);
+
+        for(int madifaki = 0;madifaki<8;madifaki++) {
+            printf("%s kelimesinden %d tane var\n",root->next->word,root->next->x);
+            root = root->next;
+        }
+        return 0;
     }
-    //bastir(root);
-    /*while (iter->next!= NULL) {
-        if(!strcmp(iter->word,root->next->word))
-            root->next->x++;
-        iter = iter->next;
-    }*/
-
-    /*if(!strcmp(iter->word,root->next->word))
-        root->next->x++;*/
-
-    //printf("***iterword: %s\nrootnextword: %s***",iter->word,root->next->word);
-    printf("rootnextX: %d",root->next->x);
-    return 0;
 }
