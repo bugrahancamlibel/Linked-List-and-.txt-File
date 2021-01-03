@@ -29,6 +29,34 @@ void sona_ekle(node* r,char *kelime,int a) {
 
 }
 
+node* araya_ekle(node* r,char *kelime, int a){
+    if(r==NULL){
+        r = (node*)malloc(sizeof(struct node));
+        r->next = NULL;
+        r->x = a;
+        return r;
+    }
+    if(r->x < a){
+        node *  temp = (node*)malloc(sizeof(struct node));
+        temp->x = a;
+        temp->word = malloc(strlen(kelime)+1);
+        strcpy(temp->word,kelime);
+        temp->next = r;
+        return temp;
+    }
+    node * iter = r;
+    while (iter->next != NULL && iter->next->x > a){
+        iter = iter->next;
+    }
+    node *  temp = (node*)malloc(sizeof(struct node));
+    temp->next = iter->next;
+    iter->next = temp;
+    temp->x = a;
+    temp->word = malloc(strlen(kelime)+1);
+    strcpy(temp->word,kelime);
+    return r;
+}
+
 int nodeda_varmi(node* root){
     node* iter = root;
     while(root->next!=NULL){
@@ -59,6 +87,16 @@ void sonu_sil(node *r){
     free(iter->next);
 }
 
+void silici(node *r, char* kelime){
+    node*temp;
+    node *iter = r;
+    while(strcmp(iter->next->word,kelime)){
+        iter = iter->next;
+    }
+    temp = iter->next;
+    iter->next = iter->next->next;
+    free(temp);
+}
 
 int main() {
 
@@ -75,8 +113,8 @@ int main() {
 
     root = (node*)malloc(sizeof(node));
     root->x = 10;
-    root->word = malloc(strlen(" ")+1);
-    strcpy(root->word," ");
+    root->word = malloc(strlen("madir")+1);
+    strcpy(root->word,"madir");
     root->next = (node*)malloc(sizeof(node));
     root ->next = NULL;
     node* baslangic = root;
@@ -103,18 +141,18 @@ int main() {
             while(!feof(dosya)){
                 fscanf(dosya,"%s",&kelime_2);
 
-                printf("%s kelimesi %s kelimesiyle karsilastirliyor...\n",kelime,kelime_2);
+                //printf("%s kelimesi %s kelimesiyle karsilastirliyor...\n",kelime,kelime_2);
 
                 kontrol = strcmp(kelime,kelime_2);
 
                 if(kontrol == 0) {
 
-                    printf("%s kelimesi %s kelimesine esittir.\n",kelime,kelime_2);
+                    //printf("%s kelimesi %s kelimesine esittir.\n",kelime,kelime_2);
                     sayac++;
 
                 }
 
-                printf("%s : %d\n",kelime,sayac);
+                //printf("%s : %d\n",kelime,sayac);
 
                 boyutu = ftell(dosya);
 
@@ -128,26 +166,27 @@ int main() {
                 break;
             }
 
-
             sona_ekle(root, &kelime, sayac);//bunun öncesinde kaç kelime olduğunu bulup 'a' yerine onu göndericez (aynısından olsa bile sonradan silinecek).
+            //root = araya_ekle(root,&kelime,sayac);
             sayac = 1;
 
             int kosul = nodeda_varmi(root); //şimdi silmeyi öğrenmeliyim
             if(kosul==1){
-                printf("VAR ");//silme burda.
+                //printf("VAR ");//silme burda.
                 sonu_sil(root);/*aslında başta aynı node dan varsa hiç bi şey yapmadan devam ettirdim ama
                 nodeda_varmi fonksiyonu sürekli ayni şeyi kontrol eder bu yüzden oluşturup siliyorum ki bir sonraki
                 kelimenin de kontrolünü yapabileyim*/
             }
             else {
-                printf("YOK ");
+                //printf("YOK ");
             }
         }
 
-        bastir(baslangic);
-
-        for(int madifaki = 0;madifaki<8;madifaki++) {
-            printf("%s kelimesinden %d tane var\n",root->next->word,root->next->x);
+        //bastir(baslangic);
+        char deneme[] = "arayaeklendimi";
+        root = araya_ekle(root,deneme,11);
+        for(int madifaki = 0;madifaki<11;madifaki++) {
+            printf("%s kelimesinden %d tane var\n",root->word,root->x);
             root = root->next;
         }
         return 0;
